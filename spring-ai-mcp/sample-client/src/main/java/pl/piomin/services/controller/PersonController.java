@@ -5,6 +5,11 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.tool.ToolCallbackProvider;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,14 +29,19 @@ public class PersonController {
     private final static Logger LOG = LoggerFactory.getLogger(PersonController.class);
     private final ChatClient chatClient;
     private final List<McpSyncClient> mcpSyncClients;
+    private final ChatMemory chatMemory;
+    
+    private final List<Message> chatHistory = new ArrayList<>();
 
     public PersonController(ChatClient.Builder chatClientBuilder,
                             ToolCallbackProvider tools,
-                            List<McpSyncClient> mcpSyncClients) {
+                            List<McpSyncClient> mcpSyncClients,ChatMemory chatMemory) {
         this.chatClient = chatClientBuilder
                 .defaultToolCallbacks(tools)
+                //.defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory))
                 .build();
         this.mcpSyncClients = mcpSyncClients;
+        this.chatMemory = chatMemory;
     }
 
     @GetMapping("/nationality/{nationality}")
@@ -48,11 +59,20 @@ public class PersonController {
     @GetMapping("/freeText/{text}")
     String freeText(@PathVariable String text) {
 
+    	UserMessage userMessage = new UserMessage(text);
+    	chatHistory.add(userMessage);
+    	
         PromptTemplate pt = new PromptTemplate(text);
         Prompt p = pt.create();
-        return this.chatClient.prompt(p)
+        String llmResponseContent = this.chatClient.prompt(p)
+        		.messages(chatHistory)
                 .call()
                 .content();
+        
+        AssistantMessage assistantMessage = new AssistantMessage(llmResponseContent);
+        chatHistory.add(assistantMessage);
+        
+        return llmResponseContent;
     }
 
     @GetMapping("/count-by-nationality/{nationality}")
