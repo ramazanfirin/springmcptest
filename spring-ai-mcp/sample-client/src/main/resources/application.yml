@@ -13,7 +13,7 @@ spring.ai.mcp.client.sse.connections:
 spring:
   ai:
     openai:
-      api-key: 
+      api-key: AIzaSyAgZ_ukO8DoLFCVHaL1opvNk_YfqJjC4II
       base-url: https://generativelanguage.googleapis.com/v1beta/openai
       chat:
         completions-path: /chat/completions
