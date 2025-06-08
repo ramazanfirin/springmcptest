@@ -39,3 +39,5 @@ The example is available in the `spring-ai-mcp` directory. Here's the diagram th
 
 # Articles
 1. Getting started with the Spring AI **MCP** concept. Implement a client-side and a server-side application that exposes `@Tools` and `Prompts` to other services. The example is available in the branch [master](https://github.com/piomin/spring-ai-showcase/tree/master). A detailed guide may be found in the following article: [Using Model Context Protocol (MCP) with Spring AI](https://piotrminkowski.com/2025/03/17/using-model-context-protocol-mcp-with-spring-ai/)
+
+https://github.com/piomin/spring-ai-apps

@@ -3,3 +3,20 @@ spring.ai.mcp.client.sse.connections:
     url: http://localhost:8060
   account-mcp-server:
     url: http://localhost:8040
+
+
+#spring:
+#  ai:
+#    openai:
+#      api-key: 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      
+
+spring:
+  ai:
+    openai:
+      api-key: AIzaSyAgZ_ukO8DoLFCVHaL1opvNk_YfqJjC4II
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      chat:
+        completions-path: /chat/completions
+        options:
+          model: gemini-2.0-flash-exp      
+      

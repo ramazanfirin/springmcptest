@@ -44,6 +44,16 @@ public class PersonController {
                 .call()
                 .content();
     }
+    
+    @GetMapping("/freeText/{text}")
+    String freeText(@PathVariable String text) {
+
+        PromptTemplate pt = new PromptTemplate(text);
+        Prompt p = pt.create();
+        return this.chatClient.prompt(p)
+                .call()
+                .content();
+    }
 
     @GetMapping("/count-by-nationality/{nationality}")
     String countByNationality(@PathVariable String nationality) {
@@ -69,7 +79,7 @@ public class PersonController {
                 .filter(c -> c.getServerInfo().name().equals("person-mcp-server"))
                 .findFirst();
         if (client.isPresent()) {
-            var content = (McpSchema.TextContent) client.get().getPrompt(r).messages().getFirst().content();
+            var content = (McpSchema.TextContent) client.get().getPrompt(r).messages().get(0).content();
             PromptTemplate pt = new PromptTemplate(content.text());
             Prompt p = pt.create(Map.of("nationality", nationality));
             LOG.info("Prompt: {}", p);
